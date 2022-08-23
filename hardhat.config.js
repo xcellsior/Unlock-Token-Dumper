@@ -13,7 +13,7 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://arb-mainnet.g.alchemy.com/v2/nV81Jj6-GmCpG0TXJFEatqUZ0lJ3tLR3",
+        url: "yourhttpsrpc",
         accounts:[contract42069420]
       }
     }
