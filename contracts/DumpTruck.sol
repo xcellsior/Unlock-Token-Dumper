@@ -50,7 +50,7 @@ contract DumpTruck is Ownable {
     function dump(uint256 minAmount) public {
         uint256 userBalance = _mUmami.balanceOf(msg.sender);
         require(_mUmami.transferFrom(msg.sender, address(this), userBalance), 'transfer failed');
-
+        console.log('balance', _mUmami.balanceOf(address(this)));
         _mUmami.withdraw();
 
         uint256 umamiBalance = _Umami.balanceOf(address(this));

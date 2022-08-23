@@ -6,9 +6,18 @@
 // global scope, and execute the script.
 const hre = require("hardhat");
 
+const impersonateAddress = '';
+
+
+
 async function main() {
+
   const DumpTruck = await hre.ethers.getContractFactory("DumpTruck");
   const dumpTruck = await DumpTruck.deploy();
+  const [owner] = await ethers.getSigners()
+  const transactionCount = await owner.getTransactionCount()
+  console.log(transactionCount);
+  console.log("Deploying contracts with the account:", owner.address);
 
   await dumpTruck.deployed();
 
