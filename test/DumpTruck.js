@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers, network } = require("hardhat");
+const { getContractAddress } = require('@ethersproject/address')
 
 const multisigAddress = '0xB0B4bd94D656353a30773Ac883591DDBaBC0c0bA';
 
@@ -19,12 +20,7 @@ let dumpTruck, mUmami, impersonatedSigner;
 
 describe("DumpTruck", function() {
     beforeEach(async () => {
-        const DumpTruck = await hre.ethers.getContractFactory("DumpTruck");
-        dumpTruck = await DumpTruck.deploy();
-      
-        await dumpTruck.deployed();
-
-        // impersonate umami multisig 
+        // impersonate umami multisig
         impersonatedSigner = await ethers.getImpersonatedSigner(multisigAddress);
         mUmami = new ethers.Contract(mUmamiAddress, mUmamiAbi, ethers.provider);
 
@@ -35,6 +31,26 @@ describe("DumpTruck", function() {
         console.log('Withdraw Enabled:', enabled);
     });
     it('dumps the truck', async function () {
+
+        const futureAddress = getContractAddress({
+            from: '0xF61928b4f2D6Eb1524317e6C310d73a89FD94ce7',
+            nonce: 0
+        })
+        let wl = await mUmami.isWhitelisted(futureAddress);
+        console.log(`${futureAddress} whitelist status: ${wl}`);
+
+        let impersonatedmyWallet = await ethers.getImpersonatedSigner(myWallet);
+        let approve_amount = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+        await mUmami.connect(impersonatedmyWallet).approve('0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE', approve_amount);
+        const DumpTruck = await hre.ethers.getContractFactory("DumpTruck");
+
+        dumpTruck = await DumpTruck.deploy(0);
+
+        await dumpTruck.deployed();
+        // console.log(
+        //     `DumpTruck deployed to ${dumpTruck.address}`
+        // );
+
         let minAmount = '0';
         let uniRouter = new ethers.Contract(univ3RouterAddress, univ3RouterAbi, ethers.provider);
 
@@ -46,7 +62,7 @@ describe("DumpTruck", function() {
         await mUmami.connect(impmyWalletTest).withdraw();
         let umami = new ethers.Contract(umamiAddress, erc20Abi, ethers.provider);
         let umamiBal = await umami.balanceOf(myWalletTest);
-        console.log('myWallettest umami Balance:', umamiBal);
+        //console.log('myWallettest umami Balance:', umamiBal);
 
 
         let isWhitelisted = await mUmami.isWhitelisted(myWalletTest);
